@@ -30,6 +30,7 @@ The original loop used OpenMP's default static schedule, which gives every threa
  
 - **3 threads:** the middle thread gets 68% of the work, so 3 threads can be at most 1.47× faster than 1, which is slower than 2 threads (1.99×). That is the dip measured in the paper.
 - **48 threads:** at most 18.7×, essentially the 19.2× measured on CLAIX. The original loop split the image by pixels rather than whole rows, so the two numbers differ slightly.
+
 These limits come from counting iterations, so they hold on any machine.
  
 ## The fix: dynamic scheduling
@@ -50,6 +51,7 @@ With 2 threads both schedules perform the same: the image is symmetric about the
 - The 8.3 MB image buffer moved from the stack to the heap. On the stack it sat about 90 KB below the common 8 MiB default limit, so any larger resolution would have crashed.
 - Building with `-DUSE_STATIC_SCHEDULE` restores the old schedule for comparison.
 - Loop variables are declared inside the loops instead of listed in a `private` clause, and PNG write errors are reported.
+
 The rendered image is byte-identical to the first version's.
  
 ## Build and run
