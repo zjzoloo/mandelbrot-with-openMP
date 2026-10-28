@@ -1,0 +1,5 @@
+   *.o
+   mandelbrot
+   mandelbrot_static
+   mandelbrot_dynamic
+   out*.png
