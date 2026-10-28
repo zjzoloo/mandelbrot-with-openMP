@@ -1,4 +1,4 @@
-.PHONY: clean run go debug release run_batch
+.PHONY: clean run go debug release run_batch profile bench
 
 OBJECTS=lodepng.o mandelbrot.o
 CC ?= gcc
@@ -13,11 +13,12 @@ debug: CFLAGS=-g -O0 $(FLAGS_OPENMP)
 debug: clean $(OBJECTS)
 	$(CC) $(CFLAGS) -Wall -o mandelbrot $(OBJECTS) $(LINKERFLAGS)
 
-mandelbrot.o:mandelbrot.c
-	$(CC) $(CFLAGS) -c -o$@ $?
+mandelbrot.o: mandelbrot.c
+	$(CC) $(CFLAGS) -Wall -Wextra -c -o $@ $<
 
-lodepng.o:lib/lodepng.c
-	$(CC) $(CFLAGS) -c -o$@ $?
+# lodepng is vendored third-party code, so its warnings are silenced
+lodepng.o: lib/lodepng.c
+	$(CC) $(CFLAGS) -w -c -o $@ $<
 
 run go:
 	./mandelbrot && eog out.png
@@ -27,5 +28,11 @@ run go:
 run_batch:
 	./mandelbrot
 
+profile:
+	./mandelbrot --profile
+
+bench:
+	bash bench.sh
+
 clean:
-	rm -f *.o mandelbrot out.png
+	rm -f *.o mandelbrot mandelbrot_static mandelbrot_dynamic out*.png
